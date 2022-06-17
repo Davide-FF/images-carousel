@@ -1,30 +1,89 @@
 <template>
-  <div
-    class="carousel-ct"
-    :style="{ backgroundImage: `url(${images[defaultImage].url})` }"
-  >
-    {{images[defaultImage].name}}
-    <slot name="images-carousel-list"></slot>
+  <div class="carousel-ct">
+    <div
+      class="carousel-img"
+      :style="{ backgroundImage: `url(${images[currentImageIndex].url})` }"
+    >
+      <div v-if="isPrevEnabled" class="arrow-ct left" @click="previousImage">
+        <div class="arrow">
+          <icon name="arrow-right-compressed" type="primary" class="icon" />
+        </div>
+      </div>
+      <div v-if="isNextEnabled" class="arrow-ct right" @click="nextImage">
+        <div class="arrow">
+          <icon name="arrow-right-compressed" type="primary" class="icon" />
+        </div>
+      </div>
+      <!-- TODO: Images carousel List -->
+    </div>
+    {{ images[currentImageIndex].name }}
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    images: [
-      {
-        name: { type: String, default: '' },
-        url: { type: String, default: '' },
+    images: {
+      type: Array,
+      default: () => [],
+      validator(items) {
+        for (const item of items) {
+          if (!item.name || !item.url) return false
+        }
+        return true
       },
-    ],
-    defaultImage: {
+    },
+    defaultImageIndex: {
       type: Number,
       default: 0,
     },
+    isPlaceHolder: {
+      type: Boolean,
+      default: false,
+    },
+    loop: {
+      type: Boolean,
+      default: false,
+    },
   },
-  // render(h, context) {
-  //   return context.props.url
-  // }
+
+  data() {
+    return {
+      currentImageIndex: 0,
+    }
+  },
+
+  computed: {
+    isPrevEnabled() {
+      if (this.loop) return true
+      return this.currentImageIndex > 0
+    },
+    isNextEnabled() {
+      if (this.loop) return true
+      return this.currentImageIndex < this.images.length - 1
+    },
+  },
+
+  created() {
+    this.currentImageIndex = this.defaultImageIndex
+  },
+
+  methods: {
+    nextImage() {
+      if (this.currentImageIndex === this.images.length - 1) {
+        this.currentImageIndex = 0
+      } else {
+        this.currentImageIndex += 1
+      }
+    },
+    previousImage() {
+      if (this.currentImageIndex === 0) {
+        this.currentImageIndex = this.images.length - 1
+      } else {
+        this.currentImageIndex -= 1
+      }
+    },
+  },
 }
 </script>
 
@@ -34,6 +93,34 @@ export default {
 
   width: 800px;
   height: 450px;
-  background-size: cover;
+
+  & .carousel-img {
+    @apply absolute w-full h-5/6 top-0 left-0 bg-cover bg-placeholder;
+
+    & .arrow-ct {
+      @apply absolute h-full cursor-pointer w-1/12;
+
+      &.left {
+        transform-origin: 50% 50%;
+        transform: rotate(-180deg);
+      }
+
+      &.right {
+        @apply right-0;
+      }
+
+      & .arrow {
+        @apply absolute;
+
+        height: 36px;
+        top: calc(50% - 18px);
+        left: calc(50% - 18px);
+
+        & .icon {
+          @apply h-full;
+        }
+      }
+    }
+  }
 }
 </style>
