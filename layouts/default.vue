@@ -1,9 +1,9 @@
 <template>
   <div>
-    <Header />
+    <!-- <Header /> -->
     <Nuxt />
-    <Footer />
-    <NotificationCenter />
+    <!-- <Footer /> -->
+    <!-- <NotificationCenter /> -->
   </div>
 </template>
 <script>

@@ -128,6 +128,11 @@ export default {
     linkExactActiveClass: 'current',
   },
 
+  server: {
+    host: '192.168.1.74',
+    port: 8080
+  },
+
   pageTransition: 'zoom-page',
 
   telemetry: false,
