@@ -89,21 +89,19 @@ export default {
 
 <style lang="postcss" scoped>
 .carousel-ct {
-  @apply flex;
+  @apply relative flex w-full;
 
-  width: 800px;
+  max-width: 800px;
   height: 450px;
 
   & .carousel-img {
-    @apply absolute w-full h-5/6 top-0 left-0 bg-cover bg-placeholder;
+    @apply absolute w-full h-5/6 top-0 left-0 bg-cover bg-center bg-placeholder;
 
     & .arrow-ct {
       @apply absolute h-full cursor-pointer w-1/12;
 
       &:hover {
         @apply bg-gradient-to-l from-transparent-white bg-opacity-20;
-
-        /* background: linear-gradient(circle, rgba(0,0,0,0), rgba(255, 255, 255, 1)) */
       }
 
       &.left {
