@@ -1,0 +1,15 @@
+{
+  "common": {
+    "homepage": "Homepage",
+    "create": "Crea",
+    "genres": "Generi",
+    "creations": "Creazioni",
+    "makers": "Makers",
+    "edit": "Modifica",
+    "send": "Invia",
+    "next": "Avanti",
+    "faq": "Domande frequenti",
+    "findMore": "Scopri di più",
+    "genericError": "Si è verificato un errore, riprovare più tardi."
+  }
+}
