@@ -27,6 +27,7 @@ module.exports = {
         'light-red': '#fff1f1',
         'light-red-focus': '#fde9e9',
         placeholder: '#eeeeee',
+        'transparent-white': 'rgba(255, 255, 255, 0.4)',
       },
       borderRadius: {
         button: '10px',

@@ -100,6 +100,12 @@ export default {
     & .arrow-ct {
       @apply absolute h-full cursor-pointer w-1/12;
 
+      &:hover {
+        @apply bg-gradient-to-l from-transparent-white bg-opacity-20;
+
+        /* background: linear-gradient(circle, rgba(0,0,0,0), rgba(255, 255, 255, 1)) */
+      }
+
       &.left {
         transform-origin: 50% 50%;
         transform: rotate(-180deg);
