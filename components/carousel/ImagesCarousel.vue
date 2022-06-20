@@ -14,9 +14,13 @@
           <icon name="arrow-right-compressed" type="primary" class="icon" />
         </div>
       </div>
-      <!-- TODO: Images carousel List -->
     </div>
-    {{ images[currentImageIndex].name }}
+    <images-preview
+      class="preview"
+      :images="images"
+      :current-image-index="currentImageIndex"
+      :number-of-images="numberOfImages"
+    ></images-preview>
   </div>
 </template>
 
@@ -37,13 +41,16 @@ export default {
       type: Number,
       default: 0,
     },
-    isPlaceHolder: {
-      type: Boolean,
-      default: false,
-    },
     loop: {
       type: Boolean,
       default: false,
+    },
+    numberOfImages: {
+      type: Number,
+      default: 5,
+      validator(number) {
+        return number % 2 !== 0
+      },
     },
   },
 
@@ -61,6 +68,23 @@ export default {
     isNextEnabled() {
       if (this.loop) return true
       return this.currentImageIndex < this.images.length - 1
+    },
+    previewImages() {
+      const sideImages = Math.floor(this.numberOfImages / 2)
+      console.log(sideImages, this.currentImageIndex)
+
+      if (this.currentImageIndex - sideImages < 0) {
+        return this.images.slice(0, this.numberOfImages)
+      } else if (this.currentImageIndex + sideImages >= this.images.length) {
+        return this.images.slice(this.images.length - sideImages * 2 - 1)
+      }
+      return this.images.slice(
+        this.currentImageIndex - sideImages,
+        this.currentImageIndex + sideImages + 1
+      )
+    },
+    currentImage() {
+      return this.images[this.currentImageIndex]
     },
   },
 
@@ -89,16 +113,16 @@ export default {
 
 <style lang="postcss" scoped>
 .carousel-ct {
-  @apply relative flex w-full;
+  @apply relative flex flex-col w-full;
 
   max-width: 800px;
   height: 450px;
 
   & .carousel-img {
-    @apply absolute w-full h-5/6 top-0 left-0 bg-cover bg-center bg-placeholder;
+    @apply w-full h-5/6 bg-cover bg-center bg-placeholder;
 
     & .arrow-ct {
-      @apply absolute h-full cursor-pointer w-1/12;
+      @apply absolute h-5/6 cursor-pointer w-2/12;
 
       &:hover {
         @apply bg-gradient-to-l from-transparent-white bg-opacity-20;
@@ -118,13 +142,19 @@ export default {
 
         height: 36px;
         top: calc(50% - 18px);
-        left: calc(50% - 18px);
+        right: 5px;
 
         & .icon {
           @apply h-full;
         }
       }
     }
+  }
+
+  & .preview {
+    @apply h-1/6;
+
+    margin: 1%;
   }
 }
 </style>
