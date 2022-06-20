@@ -1,5 +1,8 @@
 <template>
-  <div class="carousel-ct">
+  <div
+    class="carousel-ct"
+    :style="{ maxWidth: size[0] + 'px', height: size[1] + 'px' }"
+  >
     <div
       class="carousel-img"
       :style="{ backgroundImage: `url(${images[currentImageIndex].url})` }"
@@ -16,10 +19,10 @@
       </div>
     </div>
     <images-preview
-      class="preview"
       :images="images"
       :current-image-index="currentImageIndex"
       :number-of-images="numberOfImages"
+      :size="size"
     ></images-preview>
   </div>
 </template>
@@ -51,6 +54,10 @@ export default {
       validator(number) {
         return number % 2 !== 0
       },
+    },
+    size: {
+      type: Array,
+      default: () => [800, 450],
     },
   },
 
@@ -98,9 +105,6 @@ export default {
 .carousel-ct {
   @apply relative flex flex-col w-full;
 
-  max-width: 800px;
-  height: 450px;
-
   & .carousel-img {
     @apply w-full h-5/6 bg-cover bg-center bg-placeholder;
 
@@ -132,12 +136,6 @@ export default {
         }
       }
     }
-  }
-
-  & .preview {
-    @apply h-1/6;
-
-    margin: 1%;
   }
 }
 </style>

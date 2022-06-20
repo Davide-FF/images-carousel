@@ -1,12 +1,15 @@
 <template>
-  <div class="preview-ct">
-    <!-- <div
-      v-for="image in imagesToShow"
+  <div
+    class="preview-ct"
+    :style="{ maxWidth: size[0] + 'px', height: 0.2 * size[1] + 'px' }"
+  >
+    <div
+      v-for="(image, index) in images"
       :key="image.name"
       :style="{ backgroundImage: `url(${image.url})` }"
       class="preview-img"
-      :class="{ current: isCurrent(image.name) }"
-    ></div> -->
+      :class="{ current: isCurrent(index) }"
+    ></div>
   </div>
 </template>
 
@@ -31,6 +34,10 @@ export default {
       type: Number,
       default: 5,
     },
+    size: {
+      type: Array,
+      default: () => [800, 450],
+    },
   },
   computed: {
     imagesToShow() {
@@ -48,8 +55,8 @@ export default {
     },
   },
   methods: {
-    isCurrent(imageName) {
-      return this.images[this.currentImageIndex].name === imageName
+    isCurrent(index) {
+      return this.currentImageIndex === index
     },
   },
 }
@@ -57,13 +64,13 @@ export default {
 
 <style lang="postcss" scoped>
 .preview-ct {
-  @apply flex flex-row justify-around align-middle items-center;
+  @apply flex flex-row overflow-hidden justify-around align-middle items-center;
 
   & .preview-img {
-    @apply bg-center bg-cover h-full flex-grow bg-placeholder opacity-50;
+    @apply bg-center bg-cover h-full bg-placeholder opacity-50;
 
     margin: 10px;
-    max-width: 20%;
+    min-width: 140px;
 
     &.current {
       @apply opacity-100;
