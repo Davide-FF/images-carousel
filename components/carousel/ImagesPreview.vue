@@ -35,7 +35,6 @@ export default {
   computed: {
     imagesToShow() {
       const sideImages = (this.numberOfImages - 1) / 2
-      console.log(sideImages, this.currentImageIndex)
 
       if (this.currentImageIndex - sideImages < 0) {
         return this.images.slice(0, this.numberOfImages)

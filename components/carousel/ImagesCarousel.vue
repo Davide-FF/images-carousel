@@ -69,23 +69,6 @@ export default {
       if (this.loop) return true
       return this.currentImageIndex < this.images.length - 1
     },
-    previewImages() {
-      const sideImages = Math.floor(this.numberOfImages / 2)
-      console.log(sideImages, this.currentImageIndex)
-
-      if (this.currentImageIndex - sideImages < 0) {
-        return this.images.slice(0, this.numberOfImages)
-      } else if (this.currentImageIndex + sideImages >= this.images.length) {
-        return this.images.slice(this.images.length - sideImages * 2 - 1)
-      }
-      return this.images.slice(
-        this.currentImageIndex - sideImages,
-        this.currentImageIndex + sideImages + 1
-      )
-    },
-    currentImage() {
-      return this.images[this.currentImageIndex]
-    },
   },
 
   created() {
