@@ -1,12 +1,12 @@
 <template>
   <div class="preview-ct">
-    <div
+    <!-- <div
       v-for="image in imagesToShow"
       :key="image.name"
       :style="{ backgroundImage: `url(${image.url})` }"
       class="preview-img"
       :class="{ current: isCurrent(image.name) }"
-    ></div>
+    ></div> -->
   </div>
 </template>
 
