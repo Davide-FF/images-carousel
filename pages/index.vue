@@ -2,8 +2,9 @@
   <images-carousel
     :images="images"
     :loop="false"
-    :number-of-images="3"
+    :number-of-images="5"
     :size="size"
+    :previewImagesToShift="2"
   />
 </template>
 

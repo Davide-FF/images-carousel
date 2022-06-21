@@ -24,6 +24,7 @@
       :number-of-images="numberOfImages"
       :size="size"
       @clickPreviewImage="updateCurrentImageIndex"
+      :imagesToShift="previewImagesToShift"
     />
   </div>
 </template>
@@ -52,10 +53,15 @@ export default {
     numberOfImages: {
       type: Number,
       default: 5,
+      // TODO validator
     },
     size: {
       type: Object,
       default: () => {},
+    },
+    previewImagesToShift: {
+      type: Number,
+      default: 5,
     },
   },
 
@@ -104,7 +110,7 @@ export default {
 
 <style lang="postcss" scoped>
 .carousel-ct {
-  @apply relative flex flex-col w-full gap-3 p-1;
+  @apply relative flex flex-col w-full gap-3;
 
   & .carousel-img {
     @apply w-full h-5/6 bg-cover bg-center bg-placeholder flex-shrink-0;
