@@ -1,13 +1,20 @@
 <template>
   <div
     class="preview-ct"
-    :style="{ maxWidth: size.width + 'px', height: 0.2 * size.height + 'px' }"
+    :style="{ previewSizing }"
+    :class="{
+      aside: aside,
+    }"
   >
     <div
       v-for="(image, index) in images"
       :key="image.name"
       :ref="`previewImage${index}`"
       class="preview-img-ct"
+      :class="{
+        'no-padding-left': index === 0,
+        'no-padding-right': index === images.length - 1,
+      }"
       :style="{ width: imageWidth + 'px' }"
       @click="clickPreviewImage(index)"
     >
@@ -72,6 +79,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    aside: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
@@ -79,6 +90,17 @@ export default {
       isPrevEnabled: false,
       isNextEnabled: false,
     }
+  },
+  computed: {
+    previewSizing() {
+      if (this.aside) {
+        const width = 0.2 * this.size.width
+        return `width: ${width}px, maxHeight: ${this.size.height}`
+      }
+
+      const height = 0.2 * this.size.height
+      return `maxWidth: ${this.size.width}px, height: ${height}px`
+    },
   },
   watch: {
     currentImageIndex(newIndex, previousIndex) {
@@ -217,6 +239,14 @@ export default {
         @apply opacity-100;
       }
     }
+
+    &.no-padding-left {
+      @apply pl-0;
+    }
+
+    &.no-padding-right {
+      @apply pr-0;
+    }
   }
 
   & .preview-arrow-ct {
@@ -249,6 +279,10 @@ export default {
         @apply absolute h-full;
       }
     }
+  }
+
+  &.aside {
+    @apply flex-col h-full;
   }
 }
 </style>

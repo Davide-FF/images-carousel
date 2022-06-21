@@ -2,9 +2,10 @@
   <images-carousel
     :images="images"
     :loop="false"
-    :number-of-images="10"
+    :number-of-images="5"
     :size="size"
     :preview-images-to-shift="5"
+    preview-position="left"
   />
 </template>
 
@@ -25,8 +26,8 @@ export default {
         { name: 'Ten', url: 'https://picsum.photos/1280/720' },
       ],
       size: {
-        width: 1080,
-        height: 600,
+        width: 800,
+        height: 500,
       },
     }
   },

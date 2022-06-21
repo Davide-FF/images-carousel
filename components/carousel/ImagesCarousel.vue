@@ -2,6 +2,12 @@
   <div
     class="carousel-ct"
     :style="{ maxWidth: size.width + 'px', height: size.height + 'px' }"
+    :class="{
+      'preview-top': previewPosition === 'top',
+      'preview-right': previewPosition === 'right',
+      'preview-bottom': previewPosition === 'bottom',
+      'preview-left': previewPosition === 'left',
+    }"
   >
     <div
       class="carousel-img"
@@ -25,6 +31,7 @@
       :size="size"
       :loop="loop"
       :images-to-shift="previewImagesToShift"
+      :aside="['left', 'right'].includes[previewPosition]"
       @clickPreviewImage="updateCurrentImageIndex"
     />
   </div>
@@ -54,7 +61,6 @@ export default {
     numberOfImages: {
       type: Number,
       default: 5,
-      // TODO validator
     },
     size: {
       type: Object,
@@ -63,6 +69,13 @@ export default {
     previewImagesToShift: {
       type: Number,
       default: 5,
+    },
+    previewPosition: {
+      type: String,
+      default: 'bottom',
+      validator(value) {
+        return ['top', 'right', 'bottom', 'left'].includes(value)
+      },
     },
   },
 
@@ -111,10 +124,10 @@ export default {
 
 <style lang="postcss" scoped>
 .carousel-ct {
-  @apply relative flex flex-col w-full gap-3;
+  @apply relative flex flex-col w-full gap-3 m-2;
 
   & .carousel-img {
-    @apply w-full h-5/6 bg-cover bg-center bg-placeholder flex-shrink-0;
+    @apply relative w-full h-5/6 bg-cover bg-center bg-placeholder flex-shrink-0;
 
     & .arrow-ct {
       @apply absolute h-5/6 cursor-pointer w-1/12;
@@ -142,6 +155,22 @@ export default {
         & .icon {
           @apply h-full;
         }
+      }
+    }
+  }
+
+  &.preview-top {
+    @apply flex-col-reverse;
+  }
+
+  &.preview-left {
+    @apply flex-row h-full;
+
+    & .carousel-img {
+      @apply w-5/6 h-full;
+
+      & .arrow-ct {
+        @apply h-full;
       }
     }
   }
