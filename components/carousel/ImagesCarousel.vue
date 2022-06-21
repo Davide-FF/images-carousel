@@ -52,12 +52,10 @@ export default {
     numberOfImages: {
       type: Number,
       default: 5,
-      validator(number) {
-        return number % 2 !== 0
-      },
     },
     size: {
       type: Object,
+      default: () => {},
     },
   },
 
@@ -106,7 +104,7 @@ export default {
 
 <style lang="postcss" scoped>
 .carousel-ct {
-  @apply relative flex flex-col w-full gap-3;
+  @apply relative flex flex-col w-full gap-3 p-1;
 
   & .carousel-img {
     @apply w-full h-5/6 bg-cover bg-center bg-placeholder flex-shrink-0;

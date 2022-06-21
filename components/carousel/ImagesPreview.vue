@@ -57,22 +57,17 @@ export default {
       const currentMarginLeft = this.$refs.previewImage0[0].style.marginLeft
         ? parseFloat(this.$refs.previewImage0[0].style.marginLeft)
         : 0
+      const firstShownPreviewImageIndex = this.getFirstShownPreviewImageIndex()
       if (
-        previousIndex < newIndex &&
-        newIndex >= this.numberOfImages &&
-        newIndex < this.images.length
+        newIndex - firstShownPreviewImageIndex >= this.numberOfImages &&
+        previousIndex < newIndex
       ) {
         this.$refs.previewImage0[0].style.marginLeft =
           -this.imageWidth + currentMarginLeft + 'px'
-      } else if (
-        previousIndex > newIndex &&
-        previousIndex >= this.numberOfImages &&
-        previousIndex <= this.images.length - this.numberOfImages
-      ) {
+      } else if (newIndex < firstShownPreviewImageIndex) {
         this.$refs.previewImage0[0].style.marginLeft =
           this.imageWidth + currentMarginLeft + 'px'
       }
-      console.log(previousIndex, newIndex, currentMarginLeft)
     },
   },
   methods: {
@@ -81,6 +76,12 @@ export default {
     },
     clickPreviewImage(index) {
       this.$emit('clickPreviewImage', index)
+    },
+    getFirstShownPreviewImageIndex() {
+      const currentMarginLeft = this.$refs.previewImage0[0].style.marginLeft
+        ? parseFloat(this.$refs.previewImage0[0].style.marginLeft)
+        : 0
+      return Math.round(-currentMarginLeft / this.imageWidth)
     },
   },
 }
