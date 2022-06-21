@@ -4,7 +4,7 @@
     :loop="false"
     :number-of-images="5"
     :size="size"
-    :previewImagesToShift="2"
+    :preview-images-to-shift="2"
   />
 </template>
 

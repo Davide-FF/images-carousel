@@ -23,8 +23,8 @@
       :current-image-index="currentImageIndex"
       :number-of-images="numberOfImages"
       :size="size"
+      :images-to-shift="previewImagesToShift"
       @clickPreviewImage="updateCurrentImageIndex"
-      :imagesToShift="previewImagesToShift"
     />
   </div>
 </template>
