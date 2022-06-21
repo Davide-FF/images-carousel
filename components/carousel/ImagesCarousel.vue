@@ -1,7 +1,7 @@
 <template>
   <div
     class="carousel-ct"
-    :style="{ maxWidth: size[0] + 'px', height: size[1] + 'px' }"
+    :style="{ maxWidth: size.width + 'px', height: size.height + 'px' }"
   >
     <div
       class="carousel-img"
@@ -18,12 +18,13 @@
         </div>
       </div>
     </div>
-    <images-preview
+    <imagesPreview
       :images="images"
       :current-image-index="currentImageIndex"
       :number-of-images="numberOfImages"
       :size="size"
-    ></images-preview>
+      @clickPreviewImage="updateCurrentImageIndex"
+    />
   </div>
 </template>
 
@@ -56,8 +57,7 @@ export default {
       },
     },
     size: {
-      type: Array,
-      default: () => [800, 450],
+      type: Object,
     },
   },
 
@@ -97,19 +97,22 @@ export default {
         this.currentImageIndex -= 1
       }
     },
+    updateCurrentImageIndex(index) {
+      this.currentImageIndex = index
+    },
   },
 }
 </script>
 
 <style lang="postcss" scoped>
 .carousel-ct {
-  @apply relative flex flex-col w-full;
+  @apply relative flex flex-col w-full gap-3;
 
   & .carousel-img {
-    @apply w-full h-5/6 bg-cover bg-center bg-placeholder;
+    @apply w-full h-5/6 bg-cover bg-center bg-placeholder flex-shrink-0;
 
     & .arrow-ct {
-      @apply absolute h-5/6 cursor-pointer w-2/12;
+      @apply absolute h-5/6 cursor-pointer w-1/12;
 
       &:hover {
         @apply bg-gradient-to-l from-transparent-white bg-opacity-20;

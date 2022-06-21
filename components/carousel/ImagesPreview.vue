@@ -1,15 +1,24 @@
 <template>
   <div
     class="preview-ct"
-    :style="{ maxWidth: size[0] + 'px', height: 0.2 * size[1] + 'px' }"
+    :style="{ maxWidth: size.width + 'px', height: 0.2 * size.height + 'px' }"
   >
     <div
       v-for="(image, index) in images"
       :key="image.name"
-      :style="{ backgroundImage: `url(${image.url})` }"
-      class="preview-img"
-      :class="{ current: isCurrent(index) }"
-    ></div>
+      :ref="`previewImage${index}`"
+      class="preview-img-ct"
+      :style="{ width: imageWidth + 'px' }"
+      @click="clickPreviewImage(index)"
+    >
+      <div
+        :style="{
+          backgroundImage: `url(${image.url})`,
+        }"
+        class="preview-img"
+        :class="{ current: isCurrent(index) }"
+      ></div>
+    </div>
   </div>
 </template>
 
@@ -35,28 +44,43 @@ export default {
       default: 5,
     },
     size: {
-      type: Array,
-      default: () => [800, 450],
+      type: Object,
     },
   },
-  computed: {
-    imagesToShow() {
-      const sideImages = (this.numberOfImages - 1) / 2
-
-      if (this.currentImageIndex - sideImages < 0) {
-        return this.images.slice(0, this.numberOfImages)
-      } else if (this.currentImageIndex + sideImages >= this.images.length) {
-        return this.images.slice(this.images.length - sideImages * 2 - 1)
+  data() {
+    return {
+      imageWidth: this.size.width / this.numberOfImages,
+    }
+  },
+  watch: {
+    currentImageIndex(newIndex, previousIndex) {
+      const currentMarginLeft = this.$refs.previewImage0[0].style.marginLeft
+        ? parseFloat(this.$refs.previewImage0[0].style.marginLeft)
+        : 0
+      if (
+        previousIndex < newIndex &&
+        newIndex >= this.numberOfImages &&
+        newIndex < this.images.length
+      ) {
+        this.$refs.previewImage0[0].style.marginLeft =
+          -this.imageWidth + currentMarginLeft + 'px'
+      } else if (
+        previousIndex > newIndex &&
+        previousIndex >= this.numberOfImages &&
+        previousIndex <= this.images.length - this.numberOfImages
+      ) {
+        this.$refs.previewImage0[0].style.marginLeft =
+          this.imageWidth + currentMarginLeft + 'px'
       }
-      return this.images.slice(
-        this.currentImageIndex - sideImages,
-        this.currentImageIndex + sideImages + 1
-      )
+      console.log(previousIndex, newIndex, currentMarginLeft)
     },
   },
   methods: {
     isCurrent(index) {
       return this.currentImageIndex === index
+    },
+    clickPreviewImage(index) {
+      this.$emit('clickPreviewImage', index)
     },
   },
 }
@@ -64,16 +88,17 @@ export default {
 
 <style lang="postcss" scoped>
 .preview-ct {
-  @apply flex flex-row overflow-hidden justify-around align-middle items-center;
+  @apply flex flex-row overflow-hidden items-center transition-all;
 
-  & .preview-img {
-    @apply bg-center bg-cover h-full bg-placeholder opacity-50;
+  & .preview-img-ct {
+    @apply px-2 h-full flex-shrink-0 cursor-pointer;
 
-    margin: 10px;
-    min-width: 140px;
+    & .preview-img {
+      @apply bg-center bg-cover h-full w-full bg-placeholder opacity-60;
 
-    &.current {
-      @apply opacity-100;
+      &.current {
+        @apply opacity-100;
+      }
     }
   }
 }
