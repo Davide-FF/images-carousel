@@ -2,9 +2,9 @@
   <images-carousel
     :images="images"
     :loop="false"
-    :number-of-images="5"
+    :number-of-images="10"
     :size="size"
-    :previewImagesToShift="2"
+    :preview-images-to-shift="5"
   />
 </template>
 
@@ -20,13 +20,13 @@ export default {
         { name: 'Five', url: 'https://picsum.photos/1200/675' },
         { name: 'Six', url: 'https://picsum.photos/1440/810' },
         { name: 'Seven', url: 'https://picsum.photos/2400/1350' },
-        { name: 'Eight', url: 'https://picsum.photos/240/135' },
+        { name: 'Eight', url: 'https://picsum.photos/480/270' },
         { name: 'Nine', url: 'https://picsum.photos/800/450' },
         { name: 'Ten', url: 'https://picsum.photos/1280/720' },
       ],
       size: {
-        width: 960,
-        height: 540,
+        width: 1080,
+        height: 600,
       },
     }
   },

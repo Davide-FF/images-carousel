@@ -64,30 +64,40 @@ export default {
     size: {
       type: Object,
     },
-    previewImagesToShift: {
+    imagesToShift: {
       type: Number,
-      default: 3,
+      default: 5,
+    },
+    loop: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
     return {
       imageWidth: this.size.width / this.numberOfImages,
       isPrevEnabled: false,
-      isNextEnabled: true,
+      isNextEnabled: false,
     }
   },
   watch: {
     currentImageIndex(newIndex, previousIndex) {
       if (
         newIndex > previousIndex &&
-        newIndex === this.getFirstShownPreviewImageIndex() + this.numberOfImages
+        newIndex === this.getFirstPreviewIndex() + this.numberOfImages
       ) {
         this.shiftPreviewLeft(1)
       } else if (
-        previousIndex === this.getFirstShownPreviewImageIndex() &&
+        previousIndex === this.getFirstPreviewIndex() &&
         newIndex < previousIndex
       ) {
         this.shiftPreviewRight(1)
+      } else if (newIndex === this.images.length - 1 && previousIndex === 0) {
+        this.shiftPreviewLeft(
+          this.images.length - this.numberOfImages - this.getFirstPreviewIndex()
+        )
+      } else if (newIndex === 0 && previousIndex === this.images.length - 1) {
+        this.shiftPreviewRight(this.getFirstPreviewIndex())
       }
     },
   },
@@ -104,7 +114,7 @@ export default {
       this.$emit('clickPreviewImage', index)
     },
 
-    getFirstShownPreviewImageIndex() {
+    getFirstPreviewIndex() {
       const previewImage = this.$refs?.previewImage0?.[0]
 
       if (!previewImage) return null
@@ -117,13 +127,23 @@ export default {
     },
 
     checkIfPrevEnabled() {
-      this.isPrevEnabled = this.getFirstShownPreviewImageIndex() !== 0
+      if (this.numberOfImages === this.images.length) {
+        this.isPrevEnabled = false
+        return
+      }
+
+      this.isPrevEnabled = this.loop || this.getFirstPreviewIndex() !== 0
     },
 
     checkIfNextEnabled() {
+      if (this.numberOfImages === this.images.length) {
+        this.isNextEnabled = false
+        return
+      }
+
       this.isNextEnabled =
-        this.getFirstShownPreviewImageIndex() !==
-        this.images.length - this.numberOfImages
+        this.loop ||
+        this.getFirstPreviewIndex() !== this.images.length - this.numberOfImages
     },
 
     shiftPreviewLeft(imagesToShift) {
@@ -131,19 +151,19 @@ export default {
         ? parseFloat(this.$refs.previewImage0[0].style.marginLeft)
         : 0
 
-      let shiftSteps = this.previewImagesToShift
+      let shiftSteps = this.imagesToShift
       if (imagesToShift) {
         shiftSteps = imagesToShift
       } else if (
-        this.getFirstShownPreviewImageIndex() +
-          this.numberOfImages +
-          this.previewImagesToShift >
+        this.getFirstPreviewIndex() + this.numberOfImages + this.imagesToShift >
         this.images.length
       ) {
         shiftSteps =
-          this.images.length -
-          this.getFirstShownPreviewImageIndex() -
-          this.numberOfImages
+          this.images.length - this.getFirstPreviewIndex() - this.numberOfImages
+        if (shiftSteps === 0) {
+          this.shiftPreviewRight(this.getFirstPreviewIndex())
+          return
+        }
       }
 
       this.$refs.previewImage0[0].style.marginLeft =
@@ -158,13 +178,15 @@ export default {
         ? parseFloat(this.$refs.previewImage0[0].style.marginLeft)
         : 0
 
-      let shiftSteps = this.previewImagesToShift
+      let shiftSteps = this.imagesToShift
       if (imagesToShift) {
         shiftSteps = imagesToShift
-      } else if (
-        this.getFirstShownPreviewImageIndex() < this.previewImagesToShift
-      ) {
-        shiftSteps = this.getFirstShownPreviewImageIndex()
+      } else if (this.getFirstPreviewIndex() < this.imagesToShift) {
+        shiftSteps = this.getFirstPreviewIndex()
+        if (shiftSteps === 0) {
+          this.shiftPreviewLeft(this.images.length - this.numberOfImages)
+          return
+        }
       }
 
       this.$refs.previewImage0[0].style.marginLeft =
