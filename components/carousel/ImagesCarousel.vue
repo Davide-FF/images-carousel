@@ -23,6 +23,7 @@
       :current-image-index="currentImageIndex"
       :number-of-images="numberOfImages"
       :size="size"
+      :loop="loop"
       :images-to-shift="previewImagesToShift"
       @clickPreviewImage="updateCurrentImageIndex"
     />
