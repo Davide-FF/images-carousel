@@ -12,12 +12,20 @@
       class="carousel-img"
       :style="{ backgroundImage: `url(${images[currentImageIndex].url})` }"
     >
-      <div v-if="isPrevEnabled" class="arrow-ct left" @click="previousImage">
+      <div
+        v-if="isPrevEnabled"
+        class="arrow-ct left"
+        @click="arrowClick('prev')"
+      >
         <div class="arrow">
           <icon name="arrow-right-compressed" type="primary" class="icon" />
         </div>
       </div>
-      <div v-if="isNextEnabled" class="arrow-ct right" @click="nextImage">
+      <div
+        v-if="isNextEnabled"
+        class="arrow-ct right"
+        @click="arrowClick('next')"
+      >
         <div class="arrow">
           <icon name="arrow-right-compressed" type="primary" class="icon" />
         </div>
@@ -76,11 +84,16 @@ export default {
         return ['top', 'right', 'bottom', 'left'].includes(value)
       },
     },
+    autoplay: {
+      type: Number,
+      default: 0,
+    },
   },
 
   data() {
     return {
       currentImageIndex: 0,
+      autoplayInterval: 0,
     }
   },
 
@@ -99,6 +112,10 @@ export default {
     this.currentImageIndex = this.defaultImageIndex
   },
 
+  mounted() {
+    this.setAutoplay()
+  },
+
   methods: {
     nextImage() {
       if (this.currentImageIndex === this.images.length - 1) {
@@ -107,6 +124,7 @@ export default {
         this.currentImageIndex += 1
       }
     },
+
     previousImage() {
       if (this.currentImageIndex === 0) {
         this.currentImageIndex = this.images.length - 1
@@ -114,8 +132,33 @@ export default {
         this.currentImageIndex -= 1
       }
     },
+
     updateCurrentImageIndex(index) {
       this.currentImageIndex = index
+    },
+
+    setAutoplay() {
+      if (this.autoplay !== 0) {
+        this.autoplayInterval = setInterval(
+          this.nextImage,
+          this.autoplay * 1000
+        )
+      }
+    },
+
+    resetAutoplay() {
+      clearInterval(this.autoplayInterval)
+      // this.setAutoplay()
+    },
+
+    arrowClick(direction) {
+      if (direction === 'prev') {
+        this.previousImage()
+      } else if (direction === 'next') {
+        this.nextImage()
+      }
+
+      this.resetAutoplay()
     },
   },
 }

@@ -5,6 +5,7 @@
     :number-of-images="5"
     :size="size"
     :preview-images-to-shift="3"
+    :autoplay="2"
     preview-position="bottom"
   />
 </template>
