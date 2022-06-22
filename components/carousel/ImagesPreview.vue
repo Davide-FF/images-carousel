@@ -262,7 +262,7 @@ export default {
   @apply flex flex-row relative overflow-hidden items-center;
 
   & .preview-img-ct {
-    @apply px-2 h-full flex-shrink-0 cursor-pointer;
+    @apply px-2 h-full flex-shrink-0 cursor-pointer transition-all;
 
     & .preview-img {
       @apply bg-center bg-cover h-full w-full bg-placeholder opacity-50;
@@ -352,7 +352,7 @@ export default {
     }
 
     & .preview-arrow-ct {
-      height: 18px;
+      height: 14px;
       width: calc(100% + 2px);
 
       & .preview-arrow {
