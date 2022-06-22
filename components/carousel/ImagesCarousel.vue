@@ -36,7 +36,7 @@
       v-if="preview !== 'off'"
       :images="images"
       :current-image-index="currentImageIndex"
-      :number-of-images="numberOfImages"
+      :number-of-images="numberOfPreviewImages"
       :size="size"
       :loop="loop"
       :images-to-shift="previewImagesToShift"

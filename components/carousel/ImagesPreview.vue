@@ -6,6 +6,7 @@
       'display-top': position === 'top',
       'display-right': position === 'right',
       'display-left': position === 'left',
+      'display-bottom': position === 'bottom',
     }"
   >
     <div
@@ -17,16 +18,14 @@
         'no-padding-first': index === 0 && loop === false,
         'no-padding-last': index === images.length - 1 && loop === false,
       }"
+      @click="clickPreviewImage(index)"
       :style="{
         width: imageSizing.width + 'px',
         height: imageSizing.height + 'px',
       }"
-      @click="clickPreviewImage(index)"
     >
       <div
-        :style="{
-          backgroundImage: `url(${image.url})`,
-        }"
+        :style="{ backgroundImage: `url(${image.url})` }"
         class="preview-img"
         :class="{ current: isCurrent(index) }"
       >
@@ -259,7 +258,7 @@ export default {
 
 <style lang="postcss" scoped>
 .preview-ct {
-  @apply flex flex-row relative overflow-hidden items-center transition-all;
+  @apply flex flex-row relative overflow-hidden items-center;
 
   & .preview-img-ct {
     @apply px-2 h-full flex-shrink-0 cursor-pointer;
@@ -275,24 +274,10 @@ export default {
         @apply opacity-100;
       }
     }
-
-    &.no-padding-first {
-      @apply pl-0;
-    }
-
-    &.no-padding-last {
-      @apply pr-0;
-    }
   }
 
   & .preview-arrow-ct {
-    @apply absolute cursor-pointer h-full;
-
-    width: 5%;
-
-    &:hover {
-      @apply bg-gradient-to-l from-transparent-white bg-opacity-20;
-    }
+    @apply absolute cursor-pointer bg-white;
 
     &.prev {
       transform-origin: 50% 50%;
@@ -304,16 +289,135 @@ export default {
     }
 
     & .preview-arrow {
-      @apply absolute;
+      @apply absolute opacity-60;
 
-      height: 18px;
       width: 18px;
-      top: calc(50% - 9px);
-      right: 10px;
+      height: 18px;
 
       & .icon {
         @apply absolute h-full;
       }
+    }
+
+    &:hover .preview-arrow {
+      @apply opacity-100;
+    }
+  }
+
+  &.display-bottom,
+  &.display-top {
+    & .preview-img-ct {
+      @apply px-2;
+
+      &.no-padding-first {
+        @apply pl-0;
+      }
+
+      &.no-padding-last {
+        @apply pr-0;
+      }
+    }
+
+    & .preview-arrow-ct {
+      width: 18px;
+      height: calc(100% + 2px);
+
+      & .preview-arrow {
+        @apply right-0;
+
+        top: calc(50% - 9px);
+      }
+
+      &.next {
+        @apply absolute bottom-0;
+      }
+    }
+  }
+
+  &.display-left,
+  &.display-right {
+    @apply flex-col h-full;
+
+    & .preview-img-ct {
+      @apply py-2;
+
+      &.no-padding-first {
+        @apply pt-0;
+      }
+
+      &.no-padding-last {
+        @apply pb-0;
+      }
+    }
+
+    & .preview-arrow-ct {
+      height: 18px;
+      width: calc(100% + 2px);
+
+      & .preview-arrow {
+        @apply top-0;
+
+        right: calc(50% - 9px);
+      }
+
+      &.next {
+        @apply absolute bottom-0;
+      }
+
+      &.next .preview-arrow {
+        transform: rotate(90deg);
+      }
+
+      &.prev .preview-arrow {
+        left: calc(50% - 9px);
+        bottom: 5px;
+        transform-origin: 50% 50%;
+        transform: rotate(90deg);
+      }
+    }
+
+    &.display-bottom,
+    &.display-top {
+      &.preview-img-ct.prev .preview-arrow {
+        @apply absolute;
+
+        left: calc(50% - 9px);
+        bottom: 5px;
+      }
+    }
+  }
+
+  /* old */
+
+  /* & .preview-arrow-ct {
+    @apply absolute cursor-pointer bg-white;
+
+    width: 18px;
+    height: calc(100% + 2px);
+
+    &.prev {
+      transform-origin: 50% 50%;
+      transform: rotate(180deg);
+    }
+
+    &.next {
+      @apply right-0;
+    }
+
+    & .preview-arrow {
+      @apply absolute w-full opacity-60;
+
+      height: 18px;
+      top: calc(50% - 9px);
+      right: 0;
+
+      & .icon {
+        @apply absolute h-full;
+      }
+    }
+
+    &:hover .preview-arrow {
+      @apply opacity-100;
     }
   }
 
@@ -325,11 +429,11 @@ export default {
       @apply py-2;
 
       &.no-padding-first {
-        @apply pt-0;
+        @apply pl-0;
       }
 
       &.no-padding-last {
-        @apply pb-0;
+        @apply pr-0;
       }
     }
 
@@ -360,6 +464,6 @@ export default {
         transform: rotate(90deg);
       }
     }
-  }
+  } */
 }
 </style>

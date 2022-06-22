@@ -3,7 +3,7 @@
     :images="images"
     :loop="false"
     :size="size"
-    preview="off"
+    preview="right"
     :number-of-preview-images="5"
     :preview-images-to-shift="3"
     :autoplay="0"
