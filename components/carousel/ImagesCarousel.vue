@@ -3,9 +3,10 @@
     class="carousel-ct"
     :style="{ maxWidth: size.width + 'px', height: size.height + 'px' }"
     :class="{
-      'preview-top': previewPosition === 'top',
-      'preview-right': previewPosition === 'right',
-      'preview-left': previewPosition === 'left',
+      'preview-top': preview === 'top',
+      'preview-right': preview === 'right',
+      'preview-left': preview === 'left',
+      'preview-off': preview === 'off',
     }"
   >
     <div
@@ -32,13 +33,14 @@
       </div>
     </div>
     <imagesPreview
+      v-if="preview !== 'off'"
       :images="images"
       :current-image-index="currentImageIndex"
       :number-of-images="numberOfImages"
       :size="size"
       :loop="loop"
       :images-to-shift="previewImagesToShift"
-      :position="previewPosition"
+      :position="preview"
       @clickPreviewImage="updateCurrentImageIndex"
     />
   </div>
@@ -65,24 +67,24 @@ export default {
       type: Boolean,
       default: false,
     },
-    numberOfImages: {
-      type: Number,
-      default: 5,
+    preview: {
+      type: String,
+      default: 'off',
+      validator(value) {
+        return ['top', 'right', 'bottom', 'left', 'off'].includes(value)
+      },
     },
     size: {
       type: Object,
       default: () => {},
     },
-    previewImagesToShift: {
+    numberOfPreviewImages: {
       type: Number,
       default: 5,
     },
-    previewPosition: {
-      type: String,
-      default: 'bottom',
-      validator(value) {
-        return ['top', 'right', 'bottom', 'left'].includes(value)
-      },
+    previewImagesToShift: {
+      type: Number,
+      default: 5,
     },
     autoplay: {
       type: Number,
@@ -220,6 +222,10 @@ export default {
 
   &.preview-left {
     @apply flex-row-reverse;
+  }
+
+  &.preview-off .carousel-img {
+    @apply h-full w-full;
   }
 }
 </style>

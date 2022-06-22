@@ -2,11 +2,11 @@
   <images-carousel
     :images="images"
     :loop="false"
-    :number-of-images="5"
     :size="size"
+    preview="off"
+    :number-of-preview-images="5"
     :preview-images-to-shift="3"
-    :autoplay="2"
-    preview-position="bottom"
+    :autoplay="0"
   />
 </template>
 
