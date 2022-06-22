@@ -2,7 +2,7 @@
   <images-carousel
     :images="images"
     :loop="false"
-    :number-of-images="7"
+    :number-of-images="5"
     :size="size"
     :preview-images-to-shift="3"
     preview-position="bottom"

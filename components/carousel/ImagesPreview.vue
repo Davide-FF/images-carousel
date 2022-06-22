@@ -5,7 +5,6 @@
     :class="{
       'display-top': position === 'top',
       'display-right': position === 'right',
-      'display-bottom': position === 'bottom',
       'display-left': position === 'left',
     }"
   >

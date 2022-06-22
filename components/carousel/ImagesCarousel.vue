@@ -5,7 +5,6 @@
     :class="{
       'preview-top': previewPosition === 'top',
       'preview-right': previewPosition === 'right',
-      'preview-bottom': previewPosition === 'bottom',
       'preview-left': previewPosition === 'left',
     }"
   >
@@ -130,10 +129,10 @@ export default {
     @apply relative w-full h-5/6 bg-cover bg-center bg-placeholder flex-shrink-0;
 
     & .arrow-ct {
-      @apply absolute h-full cursor-pointer w-1/12;
+      @apply absolute h-full cursor-pointer w-1/12 opacity-0;
 
       &:hover {
-        @apply bg-gradient-to-l from-transparent-white bg-opacity-20;
+        @apply bg-gradient-to-l from-transparent-white bg-opacity-20 opacity-100;
       }
 
       &.left {
