@@ -18,11 +18,11 @@
         'no-padding-first': index === 0 && loop === false,
         'no-padding-last': index === images.length - 1 && loop === false,
       }"
-      @click="clickPreviewImage(index)"
       :style="{
         width: imageSizing.width + 'px',
         height: imageSizing.height + 'px',
       }"
+      @click="clickPreviewImage(index)"
     >
       <div
         :style="{ backgroundImage: `url(${image.url})` }"
@@ -60,7 +60,7 @@ export default {
   props: {
     images: {
       type: Array,
-      default: () => {},
+      default: () => [],
       validator(items) {
         for (const item of items) {
           if (!item.name || !item.url) return false
@@ -78,6 +78,7 @@ export default {
     },
     size: {
       type: Object,
+      required: true,
     },
     imagesToShift: {
       type: Number,
@@ -264,7 +265,7 @@ export default {
     @apply px-2 h-full flex-shrink-0 cursor-pointer;
 
     & .preview-img {
-      @apply bg-center bg-cover h-full w-full bg-placeholder opacity-60;
+      @apply bg-center bg-cover h-full w-full bg-placeholder opacity-50;
 
       &:hover {
         @apply opacity-100;
@@ -307,7 +308,7 @@ export default {
   &.display-bottom,
   &.display-top {
     & .preview-img-ct {
-      @apply px-2;
+      @apply px-1;
 
       &.no-padding-first {
         @apply pl-0;
@@ -339,7 +340,7 @@ export default {
     @apply flex-col h-full;
 
     & .preview-img-ct {
-      @apply py-2;
+      @apply py-1;
 
       &.no-padding-first {
         @apply pt-0;
@@ -386,84 +387,5 @@ export default {
       }
     }
   }
-
-  /* old */
-
-  /* & .preview-arrow-ct {
-    @apply absolute cursor-pointer bg-white;
-
-    width: 18px;
-    height: calc(100% + 2px);
-
-    &.prev {
-      transform-origin: 50% 50%;
-      transform: rotate(180deg);
-    }
-
-    &.next {
-      @apply right-0;
-    }
-
-    & .preview-arrow {
-      @apply absolute w-full opacity-60;
-
-      height: 18px;
-      top: calc(50% - 9px);
-      right: 0;
-
-      & .icon {
-        @apply absolute h-full;
-      }
-    }
-
-    &:hover .preview-arrow {
-      @apply opacity-100;
-    }
-  }
-
-  &.display-right,
-  &.display-left {
-    @apply flex-col h-full relative;
-
-    & .preview-img-ct {
-      @apply py-2;
-
-      &.no-padding-first {
-        @apply pl-0;
-      }
-
-      &.no-padding-last {
-        @apply pr-0;
-      }
-    }
-
-    & .preview-arrow-ct {
-      @apply absolute w-full;
-
-      height: 5%;
-
-      &.next {
-        @apply absolute bottom-0;
-      }
-
-      &.prev .preview-arrow {
-        @apply absolute;
-
-        left: calc(50% - 9px);
-        bottom: 5px;
-        transform-origin: 50% 50%;
-        transform: rotate(90deg);
-      }
-
-      &.next .preview-arrow {
-        @apply absolute;
-
-        left: calc(50% - 9px);
-        top: 5px;
-        transform-origin: 50% 50%;
-        transform: rotate(90deg);
-      }
-    }
-  } */
 }
 </style>

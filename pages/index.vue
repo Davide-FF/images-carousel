@@ -1,13 +1,22 @@
 <template>
-  <images-carousel
-    :images="images"
-    :loop="false"
-    :size="size"
-    preview="right"
-    :number-of-preview-images="5"
-    :preview-images-to-shift="3"
-    :autoplay="0"
-  />
+  <div class="main">
+    <div class="title">TITOLO BELLO</div>
+    <images-carousel
+      :images="images"
+      :loop="false"
+      :size="size"
+      preview="right"
+      :number-of-preview-images="5"
+      :preview-images-to-shift="3"
+      :autoplay="0"
+    />
+    <div>
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem nihil
+      veniam nostrum dignissimos delectus fuga excepturi dolor porro fugiat,
+      nulla dolore facilis sint sapiente odio, reprehenderit assumenda ut minus
+      velit.
+    </div>
+  </div>
 </template>
 
 <script>
@@ -34,3 +43,11 @@ export default {
   },
 }
 </script>
+
+<style lang="postcss" scoped>
+.title {
+  @apply pl-5;
+
+  font-weight: 500;
+}
+</style>

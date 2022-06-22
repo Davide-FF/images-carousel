@@ -7,6 +7,7 @@
       'preview-right': preview === 'right',
       'preview-left': preview === 'left',
       'preview-off': preview === 'off',
+      'inverted-color-scheme': invertedColorScheme,
     }"
   >
     <div
@@ -51,7 +52,7 @@ export default {
   props: {
     images: {
       type: Array,
-      default: () => [],
+      required: true,
       validator(items) {
         for (const item of items) {
           if (!item.name || !item.url) return false
@@ -62,6 +63,12 @@ export default {
     defaultImageIndex: {
       type: Number,
       default: 0,
+    },
+    size: {
+      type: Object,
+      default: () => {
+        return { width: 900, height: 600 }
+      },
     },
     loop: {
       type: Boolean,
@@ -74,10 +81,6 @@ export default {
         return ['top', 'right', 'bottom', 'left', 'off'].includes(value)
       },
     },
-    size: {
-      type: Object,
-      default: () => {},
-    },
     numberOfPreviewImages: {
       type: Number,
       default: 5,
@@ -89,6 +92,10 @@ export default {
     autoplay: {
       type: Number,
       default: 0,
+    },
+    invertedColorScheme: {
+      type: Boolean,
+      default: false,
     },
   },
 
@@ -168,7 +175,7 @@ export default {
 
 <style lang="postcss" scoped>
 .carousel-ct {
-  @apply relative flex flex-col w-full gap-3 m-2;
+  @apply relative flex flex-col w-full gap-2;
 
   & .carousel-img {
     @apply relative w-full h-5/6 bg-cover bg-center bg-placeholder flex-shrink-0;
@@ -227,5 +234,10 @@ export default {
   &.preview-off .carousel-img {
     @apply h-full w-full;
   }
+
+  /* TODO: how to change .svg color?
+  &.inverted-color-scheme {
+    
+  } */
 }
 </style>
