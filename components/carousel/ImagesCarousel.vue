@@ -31,7 +31,7 @@
       :size="size"
       :loop="loop"
       :images-to-shift="previewImagesToShift"
-      :aside="['left', 'right'].includes[previewPosition]"
+      :position="previewPosition"
       @clickPreviewImage="updateCurrentImageIndex"
     />
   </div>
@@ -130,7 +130,7 @@ export default {
     @apply relative w-full h-5/6 bg-cover bg-center bg-placeholder flex-shrink-0;
 
     & .arrow-ct {
-      @apply absolute h-5/6 cursor-pointer w-1/12;
+      @apply absolute h-full cursor-pointer w-1/12;
 
       &:hover {
         @apply bg-gradient-to-l from-transparent-white bg-opacity-20;
@@ -163,6 +163,7 @@ export default {
     @apply flex-col-reverse;
   }
 
+  &.preview-right,
   &.preview-left {
     @apply flex-row h-full;
 
@@ -173,6 +174,10 @@ export default {
         @apply h-full;
       }
     }
+  }
+
+  &.preview-left {
+    @apply flex-row-reverse;
   }
 }
 </style>

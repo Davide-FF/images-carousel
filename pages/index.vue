@@ -2,10 +2,10 @@
   <images-carousel
     :images="images"
     :loop="false"
-    :number-of-images="5"
+    :number-of-images="7"
     :size="size"
-    :preview-images-to-shift="5"
-    preview-position="left"
+    :preview-images-to-shift="3"
+    preview-position="bottom"
   />
 </template>
 

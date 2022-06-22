@@ -1,9 +1,12 @@
 <template>
   <div
     class="preview-ct"
-    :style="{ previewSizing }"
+    :style="previewSizing"
     :class="{
-      aside: aside,
+      'display-top': position === 'top',
+      'display-right': position === 'right',
+      'display-bottom': position === 'bottom',
+      'display-left': position === 'left',
     }"
   >
     <div
@@ -12,10 +15,13 @@
       :ref="`previewImage${index}`"
       class="preview-img-ct"
       :class="{
-        'no-padding-left': index === 0,
-        'no-padding-right': index === images.length - 1,
+        'no-padding-first': index === 0 && loop === false,
+        'no-padding-last': index === images.length - 1 && loop === false,
       }"
-      :style="{ width: imageWidth + 'px' }"
+      :style="{
+        width: imageSizing.width + 'px',
+        height: imageSizing.height + 'px',
+      }"
       @click="clickPreviewImage(index)"
     >
       <div
@@ -24,12 +30,16 @@
         }"
         class="preview-img"
         :class="{ current: isCurrent(index) }"
-      ></div>
+      >
+        <!-- <p style="padding-left: 30px; color: red; font-weight: 1000">
+          {{ image.name }}
+        </p> -->
+      </div>
     </div>
     <div
       v-if="isPrevEnabled"
-      class="preview-arrow-ct left"
-      @click="shiftPreviewRight()"
+      class="preview-arrow-ct prev"
+      @click="moveToPrev()"
     >
       <div class="preview-arrow">
         <icon name="arrow-right-compressed" type="primary" class="icon" />
@@ -37,8 +47,8 @@
     </div>
     <div
       v-if="isNextEnabled"
-      class="preview-arrow-ct right"
-      @click="shiftPreviewLeft()"
+      class="preview-arrow-ct next"
+      @click="moveToNext()"
     >
       <div class="preview-arrow">
         <icon name="arrow-right-compressed" type="primary" class="icon" />
@@ -79,27 +89,41 @@ export default {
       type: Boolean,
       default: false,
     },
-    aside: {
-      type: Boolean,
-      default: true,
+    position: {
+      type: String,
+      default: 'bottom',
+      validator(value) {
+        return ['top', 'right', 'bottom', 'left'].includes(value)
+      },
     },
   },
   data() {
     return {
-      imageWidth: this.size.width / this.numberOfImages,
       isPrevEnabled: false,
       isNextEnabled: false,
     }
   },
   computed: {
     previewSizing() {
-      if (this.aside) {
+      if (['left', 'right'].includes(this.position)) {
         const width = 0.2 * this.size.width
-        return `width: ${width}px, maxHeight: ${this.size.height}`
+        return `width: ${width}px; max-height: ${this.size.height}px`
       }
 
       const height = 0.2 * this.size.height
-      return `maxWidth: ${this.size.width}px, height: ${height}px`
+      return `max-width: ${this.size.width}px; height: ${height}px`
+    },
+
+    imageSizing() {
+      if (['left', 'right'].includes(this.position)) {
+        const imageHeight = this.size.height / this.numberOfImages
+        const imageWidth = this.size.width * 0.2
+        return { width: imageWidth, height: imageHeight }
+      }
+
+      const imageHeight = this.size.height * 0.2
+      const imageWidth = this.size.width / this.numberOfImages
+      return { width: imageWidth, height: imageHeight }
     },
   },
   watch: {
@@ -108,18 +132,18 @@ export default {
         newIndex > previousIndex &&
         newIndex === this.getFirstPreviewIndex() + this.numberOfImages
       ) {
-        this.shiftPreviewLeft(1)
+        this.moveToNext(1)
       } else if (
         previousIndex === this.getFirstPreviewIndex() &&
         newIndex < previousIndex
       ) {
-        this.shiftPreviewRight(1)
+        this.moveToPrev(1)
       } else if (newIndex === this.images.length - 1 && previousIndex === 0) {
-        this.shiftPreviewLeft(
+        this.moveToNext(
           this.images.length - this.numberOfImages - this.getFirstPreviewIndex()
         )
       } else if (newIndex === 0 && previousIndex === this.images.length - 1) {
-        this.shiftPreviewRight(this.getFirstPreviewIndex())
+        this.moveToPrev(this.getFirstPreviewIndex())
       }
     },
   },
@@ -141,11 +165,17 @@ export default {
 
       if (!previewImage) return null
 
-      const currentMarginLeft = previewImage.style.marginLeft
+      if (['left', 'right'].includes(this.position)) {
+        const currentMargin = previewImage.style.marginTop
+          ? parseFloat(previewImage.style.marginTop)
+          : 0
+        return Math.round(-currentMargin / this.imageSizing.height)
+      }
+
+      const currentMargin = previewImage.style.marginLeft
         ? parseFloat(previewImage.style.marginLeft)
         : 0
-
-      return Math.round(-currentMarginLeft / this.imageWidth)
+      return Math.round(-currentMargin / this.imageSizing.width)
     },
 
     checkIfPrevEnabled() {
@@ -168,10 +198,25 @@ export default {
         this.getFirstPreviewIndex() !== this.images.length - this.numberOfImages
     },
 
-    shiftPreviewLeft(imagesToShift) {
-      const currentMarginLeft = this.$refs.previewImage0[0].style.marginLeft
-        ? parseFloat(this.$refs.previewImage0[0].style.marginLeft)
-        : 0
+    moveToPrev(imagesToShift) {
+      const axis = ['left', 'right'].includes(this.position) ? 'y' : 'x'
+
+      let shiftSteps = this.imagesToShift
+      if (imagesToShift) {
+        shiftSteps = imagesToShift
+      } else if (this.getFirstPreviewIndex() < this.imagesToShift) {
+        shiftSteps = this.getFirstPreviewIndex()
+        if (shiftSteps === 0) {
+          this.shiftPreview(this.numberOfImages - this.images.length, axis)
+          return
+        }
+      }
+
+      this.shiftPreview(shiftSteps, axis)
+    },
+
+    moveToNext(imagesToShift) {
+      const axis = ['left', 'right'].includes(this.position) ? 'y' : 'x'
 
       let shiftSteps = this.imagesToShift
       if (imagesToShift) {
@@ -183,36 +228,28 @@ export default {
         shiftSteps =
           this.images.length - this.getFirstPreviewIndex() - this.numberOfImages
         if (shiftSteps === 0) {
-          this.shiftPreviewRight(this.getFirstPreviewIndex())
+          this.shiftPreview(this.getFirstPreviewIndex(), axis)
           return
         }
       }
 
-      this.$refs.previewImage0[0].style.marginLeft =
-        shiftSteps * -this.imageWidth + currentMarginLeft + 'px'
-
-      this.checkIfNextEnabled()
-      this.checkIfPrevEnabled()
+      this.shiftPreview(-shiftSteps, axis)
     },
 
-    shiftPreviewRight(imagesToShift) {
-      const currentMarginLeft = this.$refs.previewImage0[0].style.marginLeft
-        ? parseFloat(this.$refs.previewImage0[0].style.marginLeft)
-        : 0
-
-      let shiftSteps = this.imagesToShift
-      if (imagesToShift) {
-        shiftSteps = imagesToShift
-      } else if (this.getFirstPreviewIndex() < this.imagesToShift) {
-        shiftSteps = this.getFirstPreviewIndex()
-        if (shiftSteps === 0) {
-          this.shiftPreviewLeft(this.images.length - this.numberOfImages)
-          return
-        }
+    shiftPreview(shiftSteps, axis) {
+      if (axis === 'x') {
+        const currentMarginLeft = this.$refs.previewImage0[0].style.marginLeft
+          ? parseFloat(this.$refs.previewImage0[0].style.marginLeft)
+          : 0
+        this.$refs.previewImage0[0].style.marginLeft =
+          shiftSteps * this.imageSizing.width + currentMarginLeft + 'px'
+      } else if (axis === 'y') {
+        const currentMarginTop = this.$refs.previewImage0[0].style.marginTop
+          ? parseFloat(this.$refs.previewImage0[0].style.marginTop)
+          : 0
+        this.$refs.previewImage0[0].style.marginTop =
+          shiftSteps * this.imageSizing.height + currentMarginTop + 'px'
       }
-
-      this.$refs.previewImage0[0].style.marginLeft =
-        shiftSteps * this.imageWidth + currentMarginLeft + 'px'
 
       this.checkIfNextEnabled()
       this.checkIfPrevEnabled()
@@ -240,11 +277,11 @@ export default {
       }
     }
 
-    &.no-padding-left {
+    &.no-padding-first {
       @apply pl-0;
     }
 
-    &.no-padding-right {
+    &.no-padding-last {
       @apply pr-0;
     }
   }
@@ -258,12 +295,12 @@ export default {
       @apply bg-gradient-to-l from-transparent-white bg-opacity-20;
     }
 
-    &.left {
+    &.prev {
       transform-origin: 50% 50%;
-      transform: rotate(-180deg);
+      transform: rotate(180deg);
     }
 
-    &.right {
+    &.next {
       @apply right-0;
     }
 
@@ -281,8 +318,49 @@ export default {
     }
   }
 
-  &.aside {
-    @apply flex-col h-full;
+  &.display-right,
+  &.display-left {
+    @apply flex-col h-full relative;
+
+    & .preview-img-ct {
+      @apply py-2;
+
+      &.no-padding-first {
+        @apply pt-0;
+      }
+
+      &.no-padding-last {
+        @apply pb-0;
+      }
+    }
+
+    & .preview-arrow-ct {
+      @apply absolute w-full;
+
+      height: 5%;
+
+      &.next {
+        @apply absolute bottom-0;
+      }
+
+      &.prev .preview-arrow {
+        @apply absolute;
+
+        left: calc(50% - 9px);
+        bottom: 5px;
+        transform-origin: 50% 50%;
+        transform: rotate(90deg);
+      }
+
+      &.next .preview-arrow {
+        @apply absolute;
+
+        left: calc(50% - 9px);
+        top: 5px;
+        transform-origin: 50% 50%;
+        transform: rotate(90deg);
+      }
+    }
   }
 }
 </style>
