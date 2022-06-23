@@ -1,7 +1,7 @@
 <template>
   <div
     class="preview-ct"
-    :style="previewSizing"
+    :style="previewSize"
     :class="{
       'display-top': position === 'top',
       'display-right': position === 'right',
@@ -22,8 +22,8 @@
         'no-padding-last': index === images.length - 1 && loop === false,
       }"
       :style="{
-        width: imageSizing.width + 'px',
-        height: imageSizing.height + 'px',
+        width: imageSize.width + 'px',
+        height: imageSize.height + 'px',
       }"
       @click="clickPreviewImage(index)"
     >
@@ -112,7 +112,7 @@ export default {
       return ['left', 'right'].includes(this.position)
     },
 
-    previewSizing() {
+    previewSize() {
       if (this.isAtSide) {
         const width = 0.2 * this.size.width
         return `width: ${width}px; max-height: ${this.size.height}px`
@@ -122,7 +122,7 @@ export default {
       return `max-width: ${this.size.width}px; height: ${height}px`
     },
 
-    imageSizing() {
+    imageSize() {
       if (this.isAtSide) {
         const imageHeight = this.size.height / this.numberOfImages
         const imageWidth = this.size.width * 0.2
@@ -177,13 +177,13 @@ export default {
         const currentMargin = previewImage.style.marginTop
           ? parseFloat(previewImage.style.marginTop)
           : 0
-        return Math.round(-currentMargin / this.imageSizing.height)
+        return Math.round(-currentMargin / this.imageSize.height)
       }
 
       const currentMargin = previewImage.style.marginLeft
         ? parseFloat(previewImage.style.marginLeft)
         : 0
-      return Math.round(-currentMargin / this.imageSizing.width)
+      return Math.round(-currentMargin / this.imageSize.width)
     },
 
     checkIfPrevEnabled() {
@@ -247,13 +247,13 @@ export default {
     shiftPreview(shiftSteps, axis) {
       const selectMargin = axis === 'x' ? 'marginLeft' : 'marginTop'
       const stepDimension =
-        axis === 'x' ? this.imageSizing.width : this.imageSizing.height
+        axis === 'x' ? this.imageSize.width : this.imageSize.height
 
       const currentMargin = this.$refs.previewImage0[0].style[selectMargin]
         ? parseFloat(this.$refs.previewImage0[0].style[selectMargin])
         : 0
 
-      this.this.$refs.previewImage0[0].style[selectMargin] =
+      this.$refs.previewImage0[0].style[selectMargin] =
         shiftSteps * stepDimension + currentMargin + 'px'
 
       this.checkIfNextEnabled()
@@ -280,14 +280,12 @@ export default {
     },
 
     swipePreview() {
-      const axis = this.isAtSide ? 'y' : 'x'
-
       const touchMovement = this.endSwipe - this.startSwipe
       if (Math.abs(touchMovement) >= this.size.width / 4) {
         if (touchMovement < 0 && this.isNextEnabled) {
-          this.shiftPreview(-1, axis)
+          this.moveToNext()
         } else if (touchMovement > 0 && this.isPrevEnabled) {
-          this.shiftPreview(1, axis)
+          this.moveToPrev()
         }
       }
     },
