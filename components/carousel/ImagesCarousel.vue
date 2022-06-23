@@ -39,6 +39,7 @@
       :images-to-shift="previewImagesToShift"
       :position="preview"
       :inverted-color-scheme="invertedColorScheme"
+      :scrollable-preview="true"
       @clickPreviewImage="updateCurrentImageIndex"
     />
   </div>
@@ -93,6 +94,10 @@ export default {
     invertedColorScheme: {
       type: Boolean,
       default: false,
+    },
+    scrollablePreview: {
+      type: Boolean,
+      default: true,
     },
   },
 

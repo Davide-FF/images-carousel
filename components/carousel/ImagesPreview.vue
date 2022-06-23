@@ -98,6 +98,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    scrollablePreview: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
@@ -173,13 +177,13 @@ export default {
 
       if (!previewImage) return null
 
-      const selectMargin = this.isAtSide ? 'marginTop' : 'marginLeft'
+      const margin = this.isAtSide ? 'marginTop' : 'marginLeft'
       const imageDimension = this.isAtSide
         ? this.imageSize.height
         : this.imageSize.width
 
-      const currentMargin = previewImage.style[selectMargin]
-        ? parseFloat(previewImage.style[selectMargin])
+      const currentMargin = previewImage.style[margin]
+        ? parseFloat(previewImage.style[margin])
         : 0
       return Math.round(-currentMargin / imageDimension)
     },
@@ -205,25 +209,21 @@ export default {
     },
 
     moveToPrev(imagesToShift) {
-      const axis = this.isAtSide ? 'y' : 'x'
-
       let shiftSteps = this.imagesToShift
       if (imagesToShift) {
         shiftSteps = imagesToShift
       } else if (this.getFirstPreviewIndex() < this.imagesToShift) {
         shiftSteps = this.getFirstPreviewIndex()
         if (shiftSteps === 0) {
-          this.shiftPreview(this.numberOfImages - this.images.length, axis)
+          this.shiftPreview(this.numberOfImages - this.images.length)
           return
         }
       }
 
-      this.shiftPreview(shiftSteps, axis)
+      this.shiftPreview(shiftSteps)
     },
 
     moveToNext(imagesToShift) {
-      const axis = this.isAtSide ? 'y' : 'x'
-
       let shiftSteps = this.imagesToShift
       if (imagesToShift) {
         shiftSteps = imagesToShift
@@ -234,24 +234,26 @@ export default {
         shiftSteps =
           this.images.length - this.getFirstPreviewIndex() - this.numberOfImages
         if (shiftSteps === 0) {
-          this.shiftPreview(this.getFirstPreviewIndex(), axis)
+          this.shiftPreview(this.getFirstPreviewIndex())
           return
         }
       }
 
-      this.shiftPreview(-shiftSteps, axis)
+      this.shiftPreview(-shiftSteps)
     },
 
-    shiftPreview(shiftSteps, axis) {
+    // negative shifts right
+    shiftPreview(shiftSteps) {
       const previewImage = this.$refs?.previewImage0?.[0]
-      const selectMargin = axis === 'x' ? 'marginLeft' : 'marginTop'
-      const stepDimension =
-        axis === 'x' ? this.imageSize.width : this.imageSize.height
-      const currentMargin = previewImage.style[selectMargin]
-        ? parseFloat(previewImage.style[selectMargin])
+      const margin = this.isAtSide ? 'marginTop' : 'marginLeft'
+      const stepDimension = this.isAtSide
+        ? this.imageSize.height
+        : this.imageSize.width
+      const currentMargin = previewImage.style[margin]
+        ? parseFloat(previewImage.style[margin])
         : 0
 
-      previewImage.style[selectMargin] =
+      previewImage.style[margin] =
         shiftSteps * stepDimension + currentMargin + 'px'
 
       this.checkIfNextEnabled()
