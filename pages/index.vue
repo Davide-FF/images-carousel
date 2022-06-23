@@ -1,16 +1,6 @@
 <template>
   <div class="main">
     <div class="title">TITOLO BELLO</div>
-    <images-carousel
-      :images="images"
-      :loop="false"
-      :size="size"
-      preview="top"
-      :number-of-preview-images="5"
-      :preview-images-to-shift="1"
-      :autoplay="2"
-      :inverted-color-scheme="false"
-    />
     <div class="text">
       Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem nihil
       veniam nostrum dignissimos delectus fuga excepturi dolor porro fugiat,
@@ -23,6 +13,17 @@
       eius, expedita fugiat autem reiciendis quia veniam maiores ut doloremque
       iste?
     </div>
+    <images-carousel
+      class="carousel"
+      :images="images"
+      :loop="false"
+      :size="size"
+      preview="bottom"
+      :number-of-preview-images="5"
+      :preview-images-to-shift="1"
+      :autoplay="0"
+      :inverted-color-scheme="false"
+    />
   </div>
 </template>
 
@@ -43,8 +44,8 @@ export default {
         { name: 'Ten', url: 'https://picsum.photos/1920/1081' },
       ],
       size: {
-        width: 800,
-        height: 500,
+        width: 760,
+        height: 380,
       },
     }
   },
@@ -54,6 +55,10 @@ export default {
 <style lang="postcss" scoped>
 .main {
   @apply bg-white;
+
+  & .carousel {
+    @apply mt-5;
+  }
 }
 
 .title {

@@ -15,6 +15,8 @@
     <div
       class="carousel-img"
       :style="{ backgroundImage: `url(${images[currentImageIndex].url})` }"
+      @touchstart="swipeStart"
+      @touchend="swipeEnd"
     >
       <div v-if="isPrevEnabled" class="arrow-ct left" @click="previousImage">
         <div class="arrow">
@@ -98,6 +100,8 @@ export default {
     return {
       currentImageIndex: 0,
       autoplayInterval: 0,
+      startSwipeX: 0,
+      endSwipeX: 0,
     }
   },
 
@@ -153,6 +157,31 @@ export default {
     resetAutoplay() {
       clearInterval(this.autoplayInterval)
     },
+
+    swipeStart(e) {
+      const { touches } = e
+      if (touches && touches.length === 1) {
+        const touchX = touches[0].clientX
+        this.startSwipeX = touchX
+      }
+    },
+
+    swipeEnd(e) {
+      const touchX = e.changedTouches[0].clientX
+      this.endSwipeX = touchX
+      this.swipe()
+    },
+
+    swipe() {
+      const touchMovement = this.endSwipeX - this.startSwipeX
+      if (Math.abs(touchMovement) >= this.size.width / 4) {
+        if (touchMovement < 0 && this.isNextEnabled) {
+          this.nextImage()
+        } else if (touchMovement > 0 && this.isPrevEnabled) {
+          this.previousImage()
+        }
+      }
+    },
   },
 }
 </script>
@@ -160,10 +189,6 @@ export default {
 <style lang="postcss" scoped>
 .carousel-ct {
   @apply relative flex flex-col w-full gap-2;
-
-  &:hover {
-    @apply cursor-pointer;
-  }
 
   &.inverted-color-scheme {
     & .arrow svg path {
@@ -176,10 +201,6 @@ export default {
 
     & .arrow-ct {
       @apply absolute h-full cursor-pointer w-1/12 opacity-0;
-
-      &:hover {
-        @apply bg-gradient-to-l from-transparent-white bg-opacity-20 opacity-100;
-      }
 
       &.left {
         transform-origin: 50% 50%;
@@ -201,6 +222,10 @@ export default {
           @apply h-full;
         }
       }
+    }
+
+    &:hover .arrow-ct {
+      @apply bg-gradient-to-l from-transparent-white bg-opacity-20 opacity-100;
     }
   }
 

@@ -9,6 +9,8 @@
       'display-bottom': position === 'bottom',
       'inverted-color-scheme': invertedColorScheme,
     }"
+    @touchstart="swipeStart"
+    @touchend="swipeEnd"
   >
     <div
       v-for="(image, index) in images"
@@ -29,11 +31,7 @@
         :style="{ backgroundImage: `url(${image.url})` }"
         class="preview-img"
         :class="{ current: isCurrent(index) }"
-      >
-        <!-- <p style="padding-left: 30px; color: red; font-weight: 1000">
-          {{ image.name }}
-        </p> -->
-      </div>
+      ></div>
     </div>
     <div
       v-if="isPrevEnabled"
@@ -105,11 +103,17 @@ export default {
     return {
       isPrevEnabled: false,
       isNextEnabled: false,
+      startSwipe: 0,
+      endSwipe: 0,
     }
   },
   computed: {
+    isAtSide() {
+      return ['left', 'right'].includes(this.position)
+    },
+
     previewSizing() {
-      if (['left', 'right'].includes(this.position)) {
+      if (this.isAtSide) {
         const width = 0.2 * this.size.width
         return `width: ${width}px; max-height: ${this.size.height}px`
       }
@@ -119,7 +123,7 @@ export default {
     },
 
     imageSizing() {
-      if (['left', 'right'].includes(this.position)) {
+      if (this.isAtSide) {
         const imageHeight = this.size.height / this.numberOfImages
         const imageWidth = this.size.width * 0.2
         return { width: imageWidth, height: imageHeight }
@@ -169,7 +173,7 @@ export default {
 
       if (!previewImage) return null
 
-      if (['left', 'right'].includes(this.position)) {
+      if (this.isAtSide) {
         const currentMargin = previewImage.style.marginTop
           ? parseFloat(previewImage.style.marginTop)
           : 0
@@ -203,7 +207,7 @@ export default {
     },
 
     moveToPrev(imagesToShift) {
-      const axis = ['left', 'right'].includes(this.position) ? 'y' : 'x'
+      const axis = this.isAtSide ? 'y' : 'x'
 
       let shiftSteps = this.imagesToShift
       if (imagesToShift) {
@@ -220,7 +224,7 @@ export default {
     },
 
     moveToNext(imagesToShift) {
-      const axis = ['left', 'right'].includes(this.position) ? 'y' : 'x'
+      const axis = this.isAtSide ? 'y' : 'x'
 
       let shiftSteps = this.imagesToShift
       if (imagesToShift) {
@@ -241,22 +245,51 @@ export default {
     },
 
     shiftPreview(shiftSteps, axis) {
-      if (axis === 'x') {
-        const currentMarginLeft = this.$refs.previewImage0[0].style.marginLeft
-          ? parseFloat(this.$refs.previewImage0[0].style.marginLeft)
-          : 0
-        this.$refs.previewImage0[0].style.marginLeft =
-          shiftSteps * this.imageSizing.width + currentMarginLeft + 'px'
-      } else if (axis === 'y') {
-        const currentMarginTop = this.$refs.previewImage0[0].style.marginTop
-          ? parseFloat(this.$refs.previewImage0[0].style.marginTop)
-          : 0
-        this.$refs.previewImage0[0].style.marginTop =
-          shiftSteps * this.imageSizing.height + currentMarginTop + 'px'
-      }
+      const selectMargin = axis === 'x' ? 'marginLeft' : 'marginTop'
+      const stepDimension =
+        axis === 'x' ? this.imageSizing.width : this.imageSizing.height
+
+      const currentMargin = this.$refs.previewImage0[0].style[selectMargin]
+        ? parseFloat(this.$refs.previewImage0[0].style[selectMargin])
+        : 0
+
+      this.this.$refs.previewImage0[0].style[selectMargin] =
+        shiftSteps * stepDimension + currentMargin + 'px'
 
       this.checkIfNextEnabled()
       this.checkIfPrevEnabled()
+    },
+
+    swipeStart(e) {
+      const { touches } = e
+      if (touches && touches.length === 1) {
+        const touchPosition = this.isAtSide
+          ? touches[0].clientY
+          : touches[0].clientX
+        this.startSwipe = touchPosition
+      }
+    },
+
+    swipeEnd(e) {
+      const lastTouch = e.changedTouches[0]
+      const touchPosition = this.isAtSide
+        ? lastTouch.clientY
+        : lastTouch.clientX
+      this.endSwipe = touchPosition
+      this.swipePreview()
+    },
+
+    swipePreview() {
+      const axis = this.isAtSide ? 'y' : 'x'
+
+      const touchMovement = this.endSwipe - this.startSwipe
+      if (Math.abs(touchMovement) >= this.size.width / 4) {
+        if (touchMovement < 0 && this.isNextEnabled) {
+          this.shiftPreview(-1, axis)
+        } else if (touchMovement > 0 && this.isPrevEnabled) {
+          this.shiftPreview(1, axis)
+        }
+      }
     },
   },
 }
@@ -277,7 +310,7 @@ export default {
       }
 
       &.current {
-        @apply opacity-100;
+        @apply opacity-100 px-0;
       }
     }
   }
