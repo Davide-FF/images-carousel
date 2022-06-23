@@ -7,6 +7,7 @@
       'display-right': position === 'right',
       'display-left': position === 'left',
       'display-bottom': position === 'bottom',
+      'inverted-color-scheme': invertedColorScheme,
     }"
   >
     <div
@@ -40,7 +41,7 @@
       @click="moveToPrev()"
     >
       <div class="preview-arrow">
-        <icon name="arrow-right-compressed" type="primary" class="icon" />
+        <icon name="arrow-right-compressed" class="icon" />
       </div>
     </div>
     <div
@@ -49,7 +50,7 @@
       @click="moveToNext()"
     >
       <div class="preview-arrow">
-        <icon name="arrow-right-compressed" type="primary" class="icon" />
+        <icon name="arrow-right-compressed" class="icon" />
       </div>
     </div>
   </div>
@@ -94,6 +95,10 @@ export default {
       validator(value) {
         return ['top', 'right', 'bottom', 'left'].includes(value)
       },
+    },
+    invertedColorScheme: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -290,7 +295,7 @@ export default {
     }
 
     & .preview-arrow {
-      @apply absolute opacity-60;
+      @apply absolute opacity-70;
 
       width: 18px;
       height: 18px;
@@ -302,6 +307,16 @@ export default {
 
     &:hover .preview-arrow {
       @apply opacity-100;
+    }
+  }
+
+  &.inverted-color-scheme {
+    & .preview-arrow-ct {
+      @apply bg-black;
+
+      & .preview-arrow svg path {
+        fill: #fff;
+      }
     }
   }
 

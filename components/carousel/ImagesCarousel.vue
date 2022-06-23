@@ -9,27 +9,21 @@
       'preview-off': preview === 'off',
       'inverted-color-scheme': invertedColorScheme,
     }"
+    @mouseover="resetAutoplay"
+    @mouseleave="setAutoplay"
   >
     <div
       class="carousel-img"
       :style="{ backgroundImage: `url(${images[currentImageIndex].url})` }"
     >
-      <div
-        v-if="isPrevEnabled"
-        class="arrow-ct left"
-        @click="arrowClick('prev')"
-      >
+      <div v-if="isPrevEnabled" class="arrow-ct left" @click="previousImage">
         <div class="arrow">
-          <icon name="arrow-right-compressed" type="primary" class="icon" />
+          <icon name="arrow-right-compressed" class="icon" />
         </div>
       </div>
-      <div
-        v-if="isNextEnabled"
-        class="arrow-ct right"
-        @click="arrowClick('next')"
-      >
+      <div v-if="isNextEnabled" class="arrow-ct right" @click="nextImage">
         <div class="arrow">
-          <icon name="arrow-right-compressed" type="primary" class="icon" />
+          <icon name="arrow-right-compressed" class="icon" />
         </div>
       </div>
     </div>
@@ -42,6 +36,7 @@
       :loop="loop"
       :images-to-shift="previewImagesToShift"
       :position="preview"
+      :inverted-color-scheme="invertedColorScheme"
       @clickPreviewImage="updateCurrentImageIndex"
     />
   </div>
@@ -157,17 +152,6 @@ export default {
 
     resetAutoplay() {
       clearInterval(this.autoplayInterval)
-      // this.setAutoplay()
-    },
-
-    arrowClick(direction) {
-      if (direction === 'prev') {
-        this.previousImage()
-      } else if (direction === 'next') {
-        this.nextImage()
-      }
-
-      this.resetAutoplay()
     },
   },
 }
@@ -176,6 +160,16 @@ export default {
 <style lang="postcss" scoped>
 .carousel-ct {
   @apply relative flex flex-col w-full gap-2;
+
+  &:hover {
+    @apply cursor-pointer;
+  }
+
+  &.inverted-color-scheme {
+    & .arrow svg path {
+      fill: #fff;
+    }
+  }
 
   & .carousel-img {
     @apply relative w-full h-5/6 bg-cover bg-center bg-placeholder flex-shrink-0;
@@ -234,10 +228,5 @@ export default {
   &.preview-off .carousel-img {
     @apply h-full w-full;
   }
-
-  /* TODO: how to change .svg color?
-  &.inverted-color-scheme {
-    
-  } */
 }
 </style>
