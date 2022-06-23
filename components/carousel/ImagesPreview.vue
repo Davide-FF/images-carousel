@@ -173,17 +173,15 @@ export default {
 
       if (!previewImage) return null
 
-      if (this.isAtSide) {
-        const currentMargin = previewImage.style.marginTop
-          ? parseFloat(previewImage.style.marginTop)
-          : 0
-        return Math.round(-currentMargin / this.imageSize.height)
-      }
+      const selectMargin = this.isAtSide ? 'marginTop' : 'marginLeft'
+      const imageDimension = this.isAtSide
+        ? this.imageSize.height
+        : this.imageSize.width
 
-      const currentMargin = previewImage.style.marginLeft
-        ? parseFloat(previewImage.style.marginLeft)
+      const currentMargin = previewImage.style[selectMargin]
+        ? parseFloat(previewImage.style[selectMargin])
         : 0
-      return Math.round(-currentMargin / this.imageSize.width)
+      return Math.round(-currentMargin / imageDimension)
     },
 
     checkIfPrevEnabled() {
@@ -245,15 +243,15 @@ export default {
     },
 
     shiftPreview(shiftSteps, axis) {
+      const previewImage = this.$refs?.previewImage0?.[0]
       const selectMargin = axis === 'x' ? 'marginLeft' : 'marginTop'
       const stepDimension =
         axis === 'x' ? this.imageSize.width : this.imageSize.height
-
-      const currentMargin = this.$refs.previewImage0[0].style[selectMargin]
-        ? parseFloat(this.$refs.previewImage0[0].style[selectMargin])
+      const currentMargin = previewImage.style[selectMargin]
+        ? parseFloat(previewImage.style[selectMargin])
         : 0
 
-      this.$refs.previewImage0[0].style[selectMargin] =
+      previewImage.style[selectMargin] =
         shiftSteps * stepDimension + currentMargin + 'px'
 
       this.checkIfNextEnabled()

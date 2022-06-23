@@ -44,7 +44,7 @@ export default {
         { name: 'Ten', url: 'https://picsum.photos/1920/1081' },
       ],
       size: {
-        width: 760,
+        width: 380,
         height: 380,
       },
     }
