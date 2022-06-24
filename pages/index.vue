@@ -5,21 +5,24 @@
       Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem nihil
       veniam nostrum dignissimos delectus fuga excepturi dolor porro fugiat,
       nulla dolore facilis sint sapiente odio, reprehenderit assumenda ut minus
-      velit.
-    </div>
-    <div>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus quaerat
-      natus corporis ipsa praesentium adipisci similique nihil distinctio cumque
-      eius, expedita fugiat autem reiciendis quia veniam maiores ut doloremque
-      iste?
+      velit. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus
+      quaerat natus corporis ipsa praesentium adipisci similique nihil
+      distinctio cumque eius, expedita fugiat autem reiciendis quia veniam
+      maiores ut doloremque iste? Lorem ipsum dolor sit amet consectetur
+      adipisicing elit. Eius dicta alias officia quo cumque perferendis
+      veritatis repellendus nam fugiat aut, quam impedit exercitationem quis
+      beatae, explicabo veniam, laborum atque voluptatibus? Lorem ipsum dolor,
+      sit amet consectetur adipisicing elit. Facilis, eligendi veritatis autem
+      earum similique tempore voluptatum ad cum, quasi asperiores rerum modi
+      maiores, accusamus magni eaque animi. Eveniet, quibusdam rerum?
     </div>
     <images-carousel
       class="carousel"
       :images="images"
-      :loop="false"
       :size="size"
-      preview="bottom"
-      :number-of-preview-images="3"
+      :loop="false"
+      preview="right"
+      :number-of-preview-images="5"
       :preview-images-to-shift="3"
       :autoplay="0"
       :inverted-color-scheme="false"
@@ -48,6 +51,21 @@ export default {
         height: 380,
       },
     }
+  },
+
+  mounted() {
+    window.innerWidth <= 980
+      ? (this.size = { width: 360, height: 180 })
+      : (this.size = { width: 760, height: 380 })
+    window.addEventListener('resize', this.adjustSize)
+  },
+
+  methods: {
+    adjustSize() {
+      window.innerWidth <= 980
+        ? (this.size = { width: 360, height: 180 })
+        : (this.size = { width: 760, height: 380 })
+    },
   },
 }
 </script>

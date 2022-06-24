@@ -10,8 +10,6 @@
       'display-bottom': position === 'bottom',
       'inverted-color-scheme': invertedColorScheme,
     }"
-    @touchstart="swipeStart"
-    @touchend="swipeEnd"
   >
     <div
       v-for="(image, index) in images"
@@ -35,7 +33,7 @@
       ></div>
     </div>
     <div
-      v-if="isPrevEnabled && !scrollablePreview"
+      v-if="isPrevEnabled"
       class="preview-arrow-ct prev"
       @click="moveToPrev()"
     >
@@ -44,7 +42,7 @@
       </div>
     </div>
     <div
-      v-if="isNextEnabled && !scrollablePreview"
+      v-if="isNextEnabled"
       class="preview-arrow-ct next"
       @click="moveToNext()"
     >
@@ -99,10 +97,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    enableScrollablePreviewMobile: {
-      type: Boolean,
-      default: true,
-    },
   },
   data() {
     return {
@@ -151,40 +145,22 @@ export default {
       } else {
         this.alignPreview()
       }
-      // } else if (newIndex - previousIndex === 1){
-      //   this.moveToNext()
-      // } else if (newIndex - previousIndex === -1)
-
-      // if (!this.scrollablePreview) {
-      //   if (
-      //     newIndex > previousIndex &&
-      //     newIndex === this.getFirstPreviewIndex() + this.numberOfImages
-      //   ) {
-      //     this.moveToNext(1)
-      //   } else if (
-      //     previousIndex === this.getFirstPreviewIndex() &&
-      //     newIndex < previousIndex
-      //   ) {
-      //     this.moveToPrev(1)
-      //   } else if (newIndex === this.images.length - 1 && previousIndex === 0) {
-      //     this.moveToNext(
-      //       this.images.length -
-      //         this.numberOfImages -
-      //         this.getFirstPreviewIndex()
-      //     )
-      //   } else if (newIndex === 0 && previousIndex === this.images.length - 1) {
-      //     this.moveToPrev(this.getFirstPreviewIndex())
-      //   }
     },
   },
   mounted() {
     this.checkIfPrevEnabled()
     this.checkIfNextEnabled()
-    console.log(window.innerWidth)
-    this.scrollablePreview =
-      this.enableScrollablePreviewMobile && window.innerWidth <= 980
+    this.scrollablePreview = window.innerWidth <= 980
+    window.addEventListener('resize', this.updateScrollablePreview)
   },
   methods: {
+    updateScrollablePreview(e) {
+      this.scrollablePreview = window.innerWidth <= 980
+      console.log(this.scrollablePreview)
+      this.checkIfPrevEnabled()
+      this.checkIfNextEnabled()
+    },
+
     isCurrent(index) {
       return this.currentImageIndex === index
     },
@@ -215,7 +191,9 @@ export default {
         return
       }
 
-      this.isPrevEnabled = this.loop || this.getFirstPreviewIndex() !== 0
+      this.isPrevEnabled =
+        (this.loop || this.getFirstPreviewIndex() !== 0) &&
+        !this.scrollablePreview
     },
 
     checkIfNextEnabled() {
@@ -225,15 +203,15 @@ export default {
       }
 
       this.isNextEnabled =
-        this.loop ||
-        this.getFirstPreviewIndex() !== this.images.length - this.numberOfImages
+        (this.loop ||
+          this.getFirstPreviewIndex() !==
+            this.images.length - this.numberOfImages) &&
+        !this.scrollablePreview
     },
 
-    moveToPrev(imagesToShift) {
+    moveToPrev() {
       let shiftSteps = this.imagesToShift
-      if (imagesToShift) {
-        shiftSteps = imagesToShift
-      } else if (this.getFirstPreviewIndex() < this.imagesToShift) {
+      if (this.getFirstPreviewIndex() < this.imagesToShift) {
         shiftSteps = this.getFirstPreviewIndex()
         if (shiftSteps === 0) {
           this.shiftPreview(this.numberOfImages - this.images.length)
@@ -244,11 +222,9 @@ export default {
       this.shiftPreview(shiftSteps)
     },
 
-    moveToNext(imagesToShift) {
+    moveToNext() {
       let shiftSteps = this.imagesToShift
-      if (imagesToShift) {
-        shiftSteps = imagesToShift
-      } else if (
+      if (
         this.getFirstPreviewIndex() + this.numberOfImages + this.imagesToShift >
         this.images.length
       ) {
@@ -283,7 +259,6 @@ export default {
     },
 
     alignPreview() {
-      console.log('aligning')
       const previewImage = this.$refs?.previewImage0?.[0]
       const selectedMargin = this.isAtSide ? 'marginTop' : 'marginLeft'
       const stepDimension = this.isAtSide
@@ -294,8 +269,6 @@ export default {
         (-this.currentImageIndex + (this.numberOfImages - 1) / 2) *
         stepDimension
 
-      // console.log('newMargin', newMargin)
-
       if (newMargin > 0) {
         previewImage.style[selectedMargin] = 0
       } else if (
@@ -303,9 +276,8 @@ export default {
         -(this.images.length - this.numberOfImages) * stepDimension
       ) {
         previewImage.style[selectedMargin] =
-          (this.images.length - this.numberOfImages) * stepDimension
+          -(this.images.length - this.numberOfImages) * stepDimension + 'px'
       } else {
-        console.log(newMargin)
         previewImage.style[selectedMargin] = newMargin + 'px'
       }
 
@@ -313,44 +285,12 @@ export default {
       this.checkIfPrevEnabled()
     },
 
-    swipeStart(e) {
-      const { touches } = e
-      if (touches && touches.length === 1) {
-        const touchPosition = this.isAtSide
-          ? touches[0].clientY
-          : touches[0].clientX
-        this.startSwipe = touchPosition
-      }
-    },
-
-    swipeEnd(e) {
-      const lastTouch = e.changedTouches[0]
-      const touchPosition = this.isAtSide
-        ? lastTouch.clientY
-        : lastTouch.clientX
-      this.endSwipe = touchPosition
-      this.swipePreview()
-    },
-
-    swipePreview() {
-      const touchMovement = this.endSwipe - this.startSwipe
-      if (Math.abs(touchMovement) >= this.size.width / 4) {
-        if (touchMovement < 0 && this.isNextEnabled) {
-          this.moveToNext()
-        } else if (touchMovement > 0 && this.isPrevEnabled) {
-          this.moveToPrev()
-        }
-      }
-    },
-
     alignScrollablePreview() {
       const currentPreviewContainer = this.$refs.previewContainer
-      const scrollSteps = this.currentImageIndex - this.previewSize / 2
+      const scrollSteps = this.currentImageIndex - (this.numberOfImages - 1) / 2
       const scrollAmount = this.isAtSide
         ? [0, scrollSteps * this.imageSize.height]
         : [scrollSteps * this.imageSize.width, 0]
-
-      console.log(scrollAmount)
 
       currentPreviewContainer.scrollTo(scrollAmount[0], scrollAmount[1])
     },
@@ -363,7 +303,7 @@ export default {
   @apply flex flex-row relative overflow-hidden items-center;
 
   & .preview-img-ct {
-    @apply px-2 h-full flex-shrink-0 cursor-pointer transition-all;
+    @apply h-full flex-shrink-0 cursor-pointer transition-all;
 
     & .preview-img {
       @apply bg-center bg-cover h-full w-full bg-placeholder opacity-50;
