@@ -19,8 +19,8 @@
       :loop="false"
       :size="size"
       preview="bottom"
-      :number-of-preview-images="5"
-      :preview-images-to-shift="1"
+      :number-of-preview-images="3"
+      :preview-images-to-shift="3"
       :autoplay="0"
       :inverted-color-scheme="false"
     />
@@ -44,7 +44,7 @@ export default {
         { name: 'Ten', url: 'https://picsum.photos/1920/1081' },
       ],
       size: {
-        width: 380,
+        width: 760,
         height: 380,
       },
     }

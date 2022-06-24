@@ -39,7 +39,7 @@
       :images-to-shift="previewImagesToShift"
       :position="preview"
       :inverted-color-scheme="invertedColorScheme"
-      :scrollable-preview="true"
+      :scrollable-preview-mobile="true"
       @clickPreviewImage="updateCurrentImageIndex"
     />
   </div>

@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="previewContainer"
     class="preview-ct"
     :style="previewSize"
     :class="{
@@ -34,7 +35,7 @@
       ></div>
     </div>
     <div
-      v-if="isPrevEnabled"
+      v-if="isPrevEnabled && !scrollablePreview"
       class="preview-arrow-ct prev"
       @click="moveToPrev()"
     >
@@ -43,7 +44,7 @@
       </div>
     </div>
     <div
-      v-if="isNextEnabled"
+      v-if="isNextEnabled && !scrollablePreview"
       class="preview-arrow-ct next"
       @click="moveToNext()"
     >
@@ -98,7 +99,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    scrollablePreview: {
+    enableScrollablePreviewMobile: {
       type: Boolean,
       default: true,
     },
@@ -109,6 +110,7 @@ export default {
       isNextEnabled: false,
       startSwipe: 0,
       endSwipe: 0,
+      scrollablePreview: false,
     }
   },
   computed: {
@@ -128,40 +130,59 @@ export default {
 
     imageSize() {
       if (this.isAtSide) {
-        const imageHeight = this.size.height / this.numberOfImages
+        const baseHeight = this.size.height / this.numberOfImages
+        const imageHeight = this.scrollablePreview
+          ? 0.95 * baseHeight
+          : baseHeight
         const imageWidth = this.size.width * 0.2
         return { width: imageWidth, height: imageHeight }
       }
 
+      const baseWidth = this.size.width / this.numberOfImages
+      const imageWidth = this.scrollablePreview ? 0.95 * baseWidth : baseWidth
       const imageHeight = this.size.height * 0.2
-      const imageWidth = this.size.width / this.numberOfImages
       return { width: imageWidth, height: imageHeight }
     },
   },
   watch: {
     currentImageIndex(newIndex, previousIndex) {
-      if (
-        newIndex > previousIndex &&
-        newIndex === this.getFirstPreviewIndex() + this.numberOfImages
-      ) {
-        this.moveToNext(1)
-      } else if (
-        previousIndex === this.getFirstPreviewIndex() &&
-        newIndex < previousIndex
-      ) {
-        this.moveToPrev(1)
-      } else if (newIndex === this.images.length - 1 && previousIndex === 0) {
-        this.moveToNext(
-          this.images.length - this.numberOfImages - this.getFirstPreviewIndex()
-        )
-      } else if (newIndex === 0 && previousIndex === this.images.length - 1) {
-        this.moveToPrev(this.getFirstPreviewIndex())
+      if (this.scrollablePreview) {
+        this.alignScrollablePreview()
+      } else {
+        this.alignPreview()
       }
+      // } else if (newIndex - previousIndex === 1){
+      //   this.moveToNext()
+      // } else if (newIndex - previousIndex === -1)
+
+      // if (!this.scrollablePreview) {
+      //   if (
+      //     newIndex > previousIndex &&
+      //     newIndex === this.getFirstPreviewIndex() + this.numberOfImages
+      //   ) {
+      //     this.moveToNext(1)
+      //   } else if (
+      //     previousIndex === this.getFirstPreviewIndex() &&
+      //     newIndex < previousIndex
+      //   ) {
+      //     this.moveToPrev(1)
+      //   } else if (newIndex === this.images.length - 1 && previousIndex === 0) {
+      //     this.moveToNext(
+      //       this.images.length -
+      //         this.numberOfImages -
+      //         this.getFirstPreviewIndex()
+      //     )
+      //   } else if (newIndex === 0 && previousIndex === this.images.length - 1) {
+      //     this.moveToPrev(this.getFirstPreviewIndex())
+      //   }
     },
   },
   mounted() {
     this.checkIfPrevEnabled()
     this.checkIfNextEnabled()
+    console.log(window.innerWidth)
+    this.scrollablePreview =
+      this.enableScrollablePreviewMobile && window.innerWidth <= 980
   },
   methods: {
     isCurrent(index) {
@@ -249,12 +270,44 @@ export default {
       const stepDimension = this.isAtSide
         ? this.imageSize.height
         : this.imageSize.width
+
       const currentMargin = previewImage.style[margin]
         ? parseFloat(previewImage.style[margin])
         : 0
 
       previewImage.style[margin] =
         shiftSteps * stepDimension + currentMargin + 'px'
+
+      this.checkIfNextEnabled()
+      this.checkIfPrevEnabled()
+    },
+
+    alignPreview() {
+      console.log('aligning')
+      const previewImage = this.$refs?.previewImage0?.[0]
+      const selectedMargin = this.isAtSide ? 'marginTop' : 'marginLeft'
+      const stepDimension = this.isAtSide
+        ? this.imageSize.height
+        : this.imageSize.width
+
+      const newMargin =
+        (-this.currentImageIndex + (this.numberOfImages - 1) / 2) *
+        stepDimension
+
+      // console.log('newMargin', newMargin)
+
+      if (newMargin > 0) {
+        previewImage.style[selectedMargin] = 0
+      } else if (
+        newMargin <
+        -(this.images.length - this.numberOfImages) * stepDimension
+      ) {
+        previewImage.style[selectedMargin] =
+          (this.images.length - this.numberOfImages) * stepDimension
+      } else {
+        console.log(newMargin)
+        previewImage.style[selectedMargin] = newMargin + 'px'
+      }
 
       this.checkIfNextEnabled()
       this.checkIfPrevEnabled()
@@ -288,6 +341,18 @@ export default {
           this.moveToPrev()
         }
       }
+    },
+
+    alignScrollablePreview() {
+      const currentPreviewContainer = this.$refs.previewContainer
+      const scrollSteps = this.currentImageIndex - this.previewSize / 2
+      const scrollAmount = this.isAtSide
+        ? [0, scrollSteps * this.imageSize.height]
+        : [scrollSteps * this.imageSize.width, 0]
+
+      console.log(scrollAmount)
+
+      currentPreviewContainer.scrollTo(scrollAmount[0], scrollAmount[1])
     },
   },
 }
@@ -379,6 +444,10 @@ export default {
         @apply absolute bottom-0;
       }
     }
+
+    @media only screen and (max-width: 980px) {
+      @apply overflow-x-auto;
+    }
   }
 
   &.display-left,
@@ -423,14 +492,8 @@ export default {
       }
     }
 
-    &.display-bottom,
-    &.display-top {
-      &.preview-img-ct.prev .preview-arrow {
-        @apply absolute;
-
-        left: calc(50% - 9px);
-        bottom: 5px;
-      }
+    @media only screen and (max-width: 980px) {
+      @apply overflow-y-auto;
     }
   }
 }
