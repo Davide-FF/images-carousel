@@ -148,10 +148,10 @@ export default {
     },
   },
   mounted() {
-    this.checkIfPrevEnabled()
-    this.checkIfNextEnabled()
     this.scrollablePreview = window.innerWidth <= 980
     window.addEventListener('resize', this.updateScrollablePreview)
+    this.checkIfPrevEnabled()
+    this.checkIfNextEnabled()
   },
   methods: {
     updateScrollablePreview(e) {
@@ -207,6 +207,7 @@ export default {
           this.getFirstPreviewIndex() !==
             this.images.length - this.numberOfImages) &&
         !this.scrollablePreview
+      console.log(this.scrollablePreview, this.isNextEnabled)
     },
 
     moveToPrev() {
